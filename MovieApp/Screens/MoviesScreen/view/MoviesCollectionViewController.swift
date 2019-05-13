@@ -8,13 +8,18 @@
 
 import UIKit
 
-private let reuseIdentifier = "Cell"
+private let reuseIdentifier = "cell"
 
 class MoviesCollectionViewController: UICollectionViewController {
-
+    var movieArray=[Movie]()
+    func setMovie(fromArray movieArray:[Movie]){
+        self.movieArray=movieArray
+        self.collectionView?.reloadData()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        let networkConnection=NetworkConnection(moviesCollectionViewController: self);
+        networkConnection.fetchMovies(from: "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=19fdc0914a0bbb14387a1ae8b29d4430")
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -43,18 +48,19 @@ class MoviesCollectionViewController: UICollectionViewController {
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 0
+        return movieArray.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-    
+        var viewReturned = cell.viewWithTag(0)
+        
         // Configure the cell
     
         return cell
