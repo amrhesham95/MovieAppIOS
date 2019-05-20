@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+class FavoritePresenter: FavoritePresenterDelegate {
+    
+    let movieEntityCoreData:MovieEntityCoreDataDelegate = MovieEntityCoreData()
+    
+    func fetchMovie(appDelegate:AppDelegate) -> [Movie] {
+        return movieEntityCoreData.fetchMovies(appDelegate: appDelegate)
+    }
+    
+}

@@ -8,20 +8,32 @@
 
 import UIKit
 
-private let reuseIdentifier = "Cell"
+private let reuseIdentifier = "cell"
 
-class FavoriteCollectionViewController: UICollectionViewController {
-
+class FavoriteCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+    
+    var movieDetailsController:MovieDetailsViewController?
+    var movieArray=[Movie]()
+    let presenter:FavoritePresenterDelegate = FavoritePresenter()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Register cell classes
-        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        movieArray = presenter.fetchMovie(appDelegate: UIApplication.shared.delegate as! AppDelegate)
+        DispatchQueue.main.async {
+            self.collectionView?.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -29,34 +41,36 @@ class FavoriteCollectionViewController: UICollectionViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using [segue destinationViewController].
         // Pass the selected object to the new view controller.
+        movieDetailsController=segue.destination as! MovieDetailsViewController
     }
-    */
+    
 
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return 0
+        return movieArray.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-    
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)as! FavoriteCollectionViewCell
+        
+        cell.imgView.sd_setImage(with: URL(string: "https://image.tmdb.org/t/p/w185" + movieArray[indexPath.row].poster_path), placeholderImage: UIImage(named: "placeholder.png"))
         // Configure the cell
-    
+        
         return cell
     }
 
@@ -90,5 +104,16 @@ class FavoriteCollectionViewController: UICollectionViewController {
     
     }
     */
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (self.view.frame.width - 2 * 2 ) / 2
+        let height = width * 275 / 185
+        return CGSize(width: width , height: height)
+        
+    }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        movieDetailsController!.initUI(movie: movieArray[indexPath.row])
+        //self.navigationController?.pushViewController(movieDetailsController!, animated: true)
+    }
 
 }
